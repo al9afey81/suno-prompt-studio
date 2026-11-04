@@ -25,7 +25,7 @@ img{max-width:100%}
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Changa:wght@600;700;800&family=El+Messiri:wght@500;600;700&family=IBM+Plex+Sans+Arabic:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&family=Cormorant+Garamond:ital,wght@0,600;1,500;1,600&family=Playfair+Display:wght@600;700&display=swap">
 <style>
-/* Layout: sticky ivory header + gold-ruled section cards; library grid; bottom tab bar on phones, header tabs on desktop. Single light theme by design. */
+/* Layout: sticky ivory header + gold-ruled section cards; library grid; sticky tab bar at the top on all screen sizes. Single light theme by design. */
 :root{
   --cream:#F8F5EF;
   --paper:#FFFDF9;
@@ -42,13 +42,17 @@ img{max-width:100%}
   --f-body:"IBM Plex Sans Arabic","Segoe UI",Tahoma,sans-serif;
   --f-latin:"Cormorant Garamond",Georgia,serif;
   --f-mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
+  --nav-gap:10px;
+  --nav-top:calc(env(safe-area-inset-top,0px) + var(--nav-gap));
+  --nav-h:68px;
   color-scheme:light;
 }
+@media (max-width:760px){:root{--nav-h:78px}}
 *{box-sizing:border-box}
-html{-webkit-text-size-adjust:100%;direction:rtl}
+html{-webkit-text-size-adjust:100%;direction:rtl;scroll-padding-top:calc(var(--nav-top) + var(--nav-h) + 12px)}
 body{direction:rtl;text-align:right}
 body{background:var(--cream);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.7;margin:0;
-  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:0 130px}
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:0 40px}
 body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--cream)}
 button,input,textarea{font:inherit;color:inherit}
 button{cursor:pointer}
@@ -68,8 +72,9 @@ header.top{position:relative;z-index:20;background:transparent;
 .suno-link svg{width:14px;height:14px}
 
 /* Tabs */
-nav.tabs{order:3;flex-basis:100%;display:flex;gap:6px;background:linear-gradient(180deg,#FFFEFB,#FFFAF1);border:1px solid #EADFC9;border-radius:22px;padding:7px;
-  box-shadow:0 1px 2px rgba(120,90,40,.05),0 16px 32px -22px rgba(120,90,40,.45);position:relative}
+nav.tabs{position:sticky;top:var(--nav-top);z-index:30;max-width:1080px;margin:14px auto 0;display:flex;gap:6px;background:linear-gradient(180deg,#FFFEFB,#FFFAF1);border:1px solid #EADFC9;border-radius:22px;padding:7px;
+  box-shadow:0 1px 2px rgba(120,90,40,.05),0 16px 32px -22px rgba(120,90,40,.45)}
+nav.tabs::before{content:"";position:absolute;left:-16px;right:-16px;bottom:100%;height:calc(var(--nav-gap) + 1px);background:var(--cream);pointer-events:none}
 nav.tabs::after{content:"";position:absolute;inset:3px;border:1px solid rgba(197,164,109,.28);border-radius:18px;pointer-events:none}
 .tab{flex:1;justify-content:center;border:0;background:none;padding:11px 14px;border-radius:16px;font-family:var(--f-display);font-size:17.5px;font-weight:600;letter-spacing:.01em;color:#5A4E3E;display:flex;align-items:center;gap:8px;transition:background .15s,color .15s;position:relative;z-index:1}
 .tab svg{width:21px;height:21px;color:var(--gold-deep)}
@@ -80,9 +85,8 @@ nav.tabs::after{content:"";position:absolute;inset:3px;border:1px solid rgba(197
 .tab .count{font-size:11px;background:var(--gold);color:#fff;border-radius:999px;padding:0 6px;line-height:18px;font-variant-numeric:tabular-nums}
 .tab .count[data-zero]{display:none}
 @media (max-width:760px){
-  nav.tabs{position:fixed;z-index:30;gap:2px;padding:6px;border-radius:24px;
-    left:max(12px,env(safe-area-inset-left,0px));right:max(12px,env(safe-area-inset-right,0px));bottom:calc(10px + env(safe-area-inset-bottom,0px));
-    box-shadow:0 2px 4px rgba(120,90,40,.08),0 18px 36px -14px rgba(80,60,30,.45)}
+  nav.tabs{gap:2px;padding:6px;border-radius:24px;
+    box-shadow:0 2px 4px rgba(120,90,40,.08),0 14px 28px -16px rgba(80,60,30,.4)}
   nav.tabs::after{border-radius:20px}
   .tab{flex-direction:column;gap:3px;font-size:13px;padding:8px 2px;border-radius:18px;min-width:0}
   .tab svg{width:22px;height:22px}
@@ -199,7 +203,7 @@ textarea.en-in{direction:ltr;text-align:left;font-family:var(--f-mono);font-size
 .opt input{accent-color:var(--gold-deep);width:16px;height:16px;margin:0}
 .opt:has(input:checked){border-color:var(--gold);background:var(--gold-wash)}
 .hint{font-size:12.5px;color:var(--ink-soft);margin:0}
-.result{position:sticky;top:calc(env(safe-area-inset-top,0px) + 16px)}
+.result{position:sticky;top:calc(var(--nav-top) + var(--nav-h) + 12px)}
 .result .en{font-size:14px;background:var(--cream);border:1px solid var(--line);min-height:100px}
 .badge{font-size:11.5px;border-radius:999px;padding:1px 10px;background:var(--gold-wash);color:var(--gold-deep);font-weight:600}
 
@@ -285,6 +289,12 @@ body[data-view="home"] .brand{visibility:hidden}
   .hcat b{font-size:14.5px}
   .hero-search button{padding:10px 16px}
 }
+@media (max-width:360px){
+  .search input::placeholder,.hero-search input::placeholder{font-size:13px}
+  .hero-search button{padding:10px 12px}
+  .search input{padding-inline:42px 38px}
+  .tab{font-size:12px}
+}
 /* Changa (Kufi) weights for menus, headings and short labels */
 h1,h2,h3,.hero-sub,.cat b,.hcat b,.qtile b,.card-head h3 button,.btn,.link,.suno-link,.hero-search button{font-weight:700}
 h1:not(.hero-title),.sec-head h2,.tab{font-weight:800}
@@ -296,16 +306,17 @@ footer{max-width:1080px;margin:40px auto 0;font-size:12px;color:var(--ink-soft);
 <header class="top" dir="rtl">
   <div class="wrap">
     <div class="brand"><b>Suno <i>Prompt</i> Studio</b><small>أوامر Suno الجاهزة للتعليق الصوتي</small></div>
-    <nav class="tabs" id="tabs" dir="rtl" aria-label="التنقل">
-      <button class="tab" data-go="home"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M3.5 11L12 4l8.5 7" stroke-linejoin="round"/><path d="M6 9.5V20h12V9.5"/></svg>الرئيسية</button>
-      <button class="tab" data-go="library"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>المكتبة</button>
-      <button class="tab" data-go="favorites"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M12 3.5l2.6 5.3 5.8.8-4.2 4.1 1 5.8L12 16.8l-5.2 2.7 1-5.8L3.6 9.6l5.8-.8z" stroke-linejoin="round"/></svg>المفضلة<span class="count" id="favCount"></span></button>
-      <button class="tab" data-go="mine"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M4 20h4L19 9l-4-4L4 16z" stroke-linejoin="round"/><path d="M13.5 6.5l4 4"/></svg>برومبتاتي<span class="count" id="mineCount"></span></button>
-      <button class="tab" data-go="tips"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-3.5 10.9c.6.5 1 1.2 1 2.1h5c0-.9.4-1.6 1-2.1A6 6 0 0 0 12 3z" stroke-linejoin="round"/></svg>النصائح</button>
-    </nav>
     <a class="suno-link" href="https://suno.com" target="_blank" rel="noopener">فتح Suno<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 5h5v5M19 5l-8 8M10 5H5v14h14v-5"/></svg></a>
   </div>
 </header>
+
+<nav class="tabs" id="tabs" dir="rtl" aria-label="التنقل">
+  <button class="tab" data-go="home"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M3.5 11L12 4l8.5 7" stroke-linejoin="round"/><path d="M6 9.5V20h12V9.5"/></svg>الرئيسية</button>
+  <button class="tab" data-go="library"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>المكتبة</button>
+  <button class="tab" data-go="favorites"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M12 3.5l2.6 5.3 5.8.8-4.2 4.1 1 5.8L12 16.8l-5.2 2.7 1-5.8L3.6 9.6l5.8-.8z" stroke-linejoin="round"/></svg>المفضلة<span class="count" id="favCount"></span></button>
+  <button class="tab" data-go="mine"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M4 20h4L19 9l-4-4L4 16z" stroke-linejoin="round"/><path d="M13.5 6.5l4 4"/></svg>برومبتاتي<span class="count" id="mineCount"></span></button>
+  <button class="tab" data-go="tips"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-3.5 10.9c.6.5 1 1.2 1 2.1h5c0-.9.4-1.6 1-2.1A6 6 0 0 0 12 3z" stroke-linejoin="round"/></svg>النصائح</button>
+</nav>
 
 <main class="wrap" id="app"></main>
 
@@ -533,7 +544,7 @@ function renderHome(){
     '<h1 class="hero-title">Suno <span>Prompt</span> Studio</h1>'+
     '<div class="ornament"><i></i><svg viewBox="0 0 12 12"><path d="M6 0l6 6-6 6-6-6z" fill="currentColor"/></svg><i></i></div>'+
     '<p class="hero-sub">مكتبتك الذكية لصناعة الموسيقى والتعليق الصوتي</p>'+
-    '<form class="hero-search" id="homeSearch" role="search">'+ICON.search+'<input id="hq" type="search" placeholder="ابحث عن برومبت… بالعربي أو English" autocomplete="off" enterkeyhint="search" aria-label="بحث"><button type="submit">بحث</button></form>'+
+    '<form class="hero-search" id="homeSearch" role="search">'+ICON.search+'<input id="hq" type="search" placeholder="ابحث بالعربي أو English" autocomplete="off" enterkeyhint="search" aria-label="بحث"><button type="submit">بحث</button></form>'+
     '<div class="facts"><span>35 برومبت</span><span>7 أقسام</span><span>جاهزة للنسخ إلى Suno</span></div>'+
    '</div>'+
    '<div class="sec-head"><h2>الأقسام</h2><button class="link" data-go="library">عرض المكتبة</button></div>'+
@@ -556,7 +567,7 @@ function renderLibrary(){
    '<div><div class="eyebrow">مكتبة البرومبتات · 35 أمرًا في 7 أقسام</div><h1>موسيقى خلفية تترك مساحة لصوتك</h1>'+
    '<p class="lead">انسخ الوصف الإنجليزي وضعه في خانة الـ Style في Suno، ثم فعّل Instrumental حتى تطلع الموسيقى بدون غناء.</p>'+
    '<div class="formula"><span>النوع الموسيقي</span><em>+</em><span>الآلات</span><em>+</em><span>السرعة BPM</span><em>+</em><span>الإحساس</span><em>+</em><span>دور الموسيقى كخلفية</span></div></div>'+
-   '<div class="search">'+ICON.search+'<input id="q" type="search" placeholder="ابحث بالعربي أو English… مثل: وثائقي، oud، piano" value="'+esc(ui.q)+'" autocomplete="off" enterkeyhint="search"><button class="clear" data-act="clearq" aria-label="مسح البحث"'+(ui.q?'':' hidden')+'>×</button></div>'+
+   '<div class="search">'+ICON.search+'<input id="q" type="search" placeholder="ابحث بالعربي أو English… مثل: oud" value="'+esc(ui.q)+'" autocomplete="off" enterkeyhint="search"><button class="clear" data-act="clearq" aria-label="مسح البحث"'+(ui.q?'':' hidden')+'>×</button></div>'+
    '<div class="cats" id="cats"></div>'+
    '<div id="catNote"></div>'+
    '<div class="meta-line"><span class="n" id="count"></span></div>'+
