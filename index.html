@@ -1,0 +1,748 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="مكتبتك الذكية لصناعة الموسيقى والتعليق الصوتي: 35 برومبت Suno جاهز للنسخ والتخصيص.">
+<meta name="theme-color" content="#F8F5EF">
+<meta name="color-scheme" content="light">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Prompt Studio">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="512x512" href="icon-512.png">
+<link rel="manifest" href="manifest.webmanifest">
+<style>
+/* Base reset (was provided by the Claude host before) */
+:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+body{margin:0}
+img{max-width:100%}
+[hidden]{display:none!important}
+</style>
+<title>Suno Prompt Studio</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=El+Messiri:wght@500;600;700&family=IBM+Plex+Sans+Arabic:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&family=Cormorant+Garamond:ital,wght@0,600;1,500;1,600&family=Playfair+Display:wght@600;700&display=swap">
+<style>
+/* Layout: sticky ivory header + gold-ruled section cards; library grid; bottom tab bar on phones, header tabs on desktop. Single light theme by design. */
+:root{
+  --cream:#F8F5EF;
+  --paper:#FFFDF9;
+  --ink:#2A251E;
+  --ink-soft:#6B6052;
+  --gold:#C5A46D;
+  --gold-deep:#8E6E3A;
+  --gold-wash:#F1E8D8;
+  --line:#E7DDCC;
+  --ok:#3F7A4E;
+  --danger:#A2453A;
+  --shadow:0 1px 2px rgba(80,60,30,.06),0 8px 24px -12px rgba(80,60,30,.18);
+  --f-display:"El Messiri","IBM Plex Sans Arabic",Tahoma,sans-serif;
+  --f-body:"IBM Plex Sans Arabic","Segoe UI",Tahoma,sans-serif;
+  --f-latin:"Cormorant Garamond",Georgia,serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%;direction:rtl}
+body{direction:rtl;text-align:right}
+body{background:var(--cream);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.7;margin:0;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:0 110px}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--cream)}
+button,input,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:2px solid var(--gold-deep);outline-offset:2px}
+.wrap{max-width:1080px;margin-inline:auto}
+
+/* Header */
+header.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:rgba(248,245,239,.94);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);
+  margin-inline:calc(-1 * max(16px,env(safe-area-inset-left,0px))) calc(-1 * max(16px,env(safe-area-inset-right,0px)));
+  padding-inline:max(16px,env(safe-area-inset-right,0px)) max(16px,env(safe-area-inset-left,0px));border-bottom:1px solid var(--line)}
+.top .wrap{display:flex;align-items:center;gap:16px;padding-block:12px}
+.brand{display:flex;flex-direction:column;line-height:1.1;margin-inline-end:auto}
+.brand b{font-family:var(--f-latin);font-size:26px;font-weight:600;letter-spacing:.01em;direction:ltr;text-align:right}
+.brand b i{color:var(--gold-deep);font-weight:500}
+.brand small{font-size:12px;color:var(--ink-soft)}
+.suno-link{display:inline-flex;align-items:center;gap:6px;text-decoration:none;color:var(--paper);background:var(--ink);border-radius:999px;padding:8px 16px;font-size:13px;font-weight:600;white-space:nowrap}
+.suno-link svg{width:14px;height:14px}
+
+/* Tabs */
+nav.tabs{display:flex;gap:4px}
+.tab{border:0;background:none;padding:8px 14px;border-radius:999px;font-size:14px;font-weight:500;color:var(--ink-soft);display:flex;align-items:center;gap:6px}
+.tab svg{width:18px;height:18px}
+.tab[aria-current="page"]{background:var(--gold-wash);color:var(--ink)}
+.tab .count{font-size:11px;background:var(--gold);color:#fff;border-radius:999px;padding:0 6px;line-height:18px;font-variant-numeric:tabular-nums}
+.tab .count[data-zero]{display:none}
+@media (max-width:760px){
+  nav.tabs{position:fixed;inset:auto 0 0 0;z-index:30;background:var(--paper);border-top:1px solid var(--line);justify-content:space-around;
+    padding:6px max(8px,env(safe-area-inset-right,0px)) calc(6px + env(safe-area-inset-bottom,0px)) max(8px,env(safe-area-inset-left,0px));box-shadow:0 -6px 20px -14px rgba(80,60,30,.3)}
+  .tab{flex-direction:column;gap:2px;font-size:11px;padding:6px 8px;flex:1;position:relative}
+  .tab .count{position:absolute;top:2px;inset-inline-start:50%;margin-inline-start:6px}
+  .brand b{font-size:22px}
+}
+
+/* Sections */
+main{padding-block:28px 0}
+.view{display:flex;flex-direction:column;gap:22px}
+.eyebrow{font-size:12px;letter-spacing:.08em;color:var(--gold-deep);font-weight:600}
+h1,h2,h3{font-family:var(--f-display);font-weight:600;text-wrap:balance;margin:0;line-height:1.3}
+h1{font-size:clamp(26px,5vw,36px)}
+h2{font-size:21px}
+h3{font-size:17px}
+.lead{color:var(--ink-soft);max-width:62ch;margin:6px 0 0}
+.formula{display:flex;flex-wrap:wrap;gap:6px;margin-top:14px}
+.formula span{font-size:12.5px;border:1px solid var(--gold);color:var(--gold-deep);border-radius:999px;padding:2px 12px;background:var(--paper)}
+.formula em{font-style:normal;color:var(--gold);align-self:center}
+
+/* Search */
+.search{position:relative}
+.search input{width:100%;font-size:16px;padding:14px 46px 14px 44px;border:1px solid var(--line);border-radius:14px;background:var(--paper);box-shadow:var(--shadow);outline:none}
+.search input:focus{border-color:var(--gold)}
+.search .ico{position:absolute;inset-inline-start:16px;top:50%;transform:translateY(-50%);width:18px;height:18px;color:var(--gold-deep);pointer-events:none}
+.search .clear{position:absolute;inset-inline-end:8px;top:50%;transform:translateY(-50%);border:0;background:var(--gold-wash);width:30px;height:30px;border-radius:50%;font-size:16px;line-height:1}
+
+/* Category cards */
+.cats{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
+.cat{text-align:start;border:1px solid var(--line);background:var(--paper);border-radius:14px;padding:12px 14px;display:flex;flex-direction:column;gap:2px;transition:border-color .15s,background .15s}
+.cat b{font-family:var(--f-display);font-weight:600;font-size:15px}
+.cat small{color:var(--ink-soft);font-size:12px;font-variant-numeric:tabular-nums}
+.cat:hover{border-color:var(--gold)}
+.cat[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:var(--paper)}
+.cat[aria-pressed="true"] small{color:#D9C7A4}
+.cat-note{font-size:13.5px;color:var(--ink-soft);border-inline-start:2px solid var(--gold);padding-inline-start:12px;margin:0}
+.meta-line{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}
+.meta-line .n{font-size:13px;color:var(--ink-soft);font-variant-numeric:tabular-nums}
+
+/* Prompt cards */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px}
+@media (max-width:400px){.grid{grid-template-columns:1fr}}
+.card{background:var(--paper);border:1px solid var(--line);border-radius:18px;padding:16px;display:flex;flex-direction:column;gap:10px;box-shadow:var(--shadow);min-width:0}
+.card-head{display:flex;gap:10px;align-items:flex-start}
+.card-head .titles{flex:1;min-width:0;cursor:pointer}
+.card-head .titles small{display:block;font-size:12px;color:var(--gold-deep)}
+.card-head h3 button{all:unset;cursor:pointer}
+.note{font-size:12.5px;color:var(--ink-soft)}
+.en{direction:ltr;text-align:left;font-family:var(--f-mono);font-size:13px;line-height:1.65;color:#3B342A;background:var(--cream);border-radius:10px;padding:10px 12px;margin:0;overflow-wrap:anywhere}
+.card .en{display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;cursor:pointer}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{font-size:12px;border-radius:999px;padding:2px 10px;background:var(--gold-wash);color:#5E4A28;direction:ltr}
+.chip.bpm{background:var(--ink);color:var(--paper);font-family:var(--f-mono);font-variant-numeric:tabular-nums}
+.card-actions{display:flex;gap:8px;margin-top:auto;flex-wrap:wrap}
+
+/* Buttons */
+.btn{border:1px solid var(--line);background:var(--paper);border-radius:12px;padding:9px 14px;font-size:14px;font-weight:500;display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:42px}
+.btn svg{width:16px;height:16px;flex:none}
+.btn:hover{border-color:var(--gold)}
+.btn.gold{background:var(--gold);border-color:var(--gold);color:#fff;font-weight:600}
+.btn.gold:hover{background:#B8955B}
+.btn.dark{background:var(--ink);border-color:var(--ink);color:var(--paper)}
+.btn.grow{flex:1}
+.btn.danger{color:var(--danger)}
+.btn.danger.armed{background:var(--danger);border-color:var(--danger);color:#fff}
+.star{border:1px solid var(--line);background:var(--paper);width:42px;height:42px;border-radius:12px;display:grid;place-items:center;flex:none;color:var(--gold-deep)}
+.star svg{width:20px;height:20px}
+.star[aria-pressed="true"]{background:var(--gold-wash);border-color:var(--gold)}
+.star[aria-pressed="true"] svg path{fill:var(--gold)}
+
+/* Empty */
+.empty{border:1px dashed var(--gold);border-radius:18px;padding:32px 20px;text-align:center;color:var(--ink-soft);background:var(--paper)}
+.empty h3{color:var(--ink);margin-bottom:4px}
+
+/* Sheet */
+.overlay{position:fixed;inset:0;background:rgba(42,37,30,.42);z-index:50;display:flex;align-items:center;justify-content:center;padding:20px max(16px,env(safe-area-inset-right,0px)) 20px max(16px,env(safe-area-inset-left,0px))}
+.sheet{background:var(--paper);border-radius:22px;width:min(620px,100%);max-height:88vh;overflow:auto;-webkit-overflow-scrolling:touch;padding:22px;display:flex;flex-direction:column;gap:14px;box-shadow:0 30px 60px -20px rgba(40,30,15,.45);border-top:3px solid var(--gold)}
+@media (max-width:760px){
+  .overlay{align-items:flex-end;padding:0}
+  .sheet{border-radius:22px 22px 0 0;max-height:90vh;padding:20px max(18px,env(safe-area-inset-right,0px)) calc(22px + env(safe-area-inset-bottom,0px)) max(18px,env(safe-area-inset-left,0px))}
+}
+.sheet-head{display:flex;align-items:flex-start;gap:10px}
+.sheet-head > div{flex:1;min-width:0}
+.x{border:0;background:var(--gold-wash);width:36px;height:36px;border-radius:50%;font-size:20px;line-height:1;flex:none}
+.kv{display:grid;grid-template-columns:auto 1fr;gap:6px 14px;font-size:14px;align-items:center}
+.kv dt{color:var(--ink-soft)}
+.kv dd{margin:0}
+.chars{font-family:var(--f-mono);font-size:12px;color:var(--ink-soft);font-variant-numeric:tabular-nums}
+.chars.over{color:var(--danger)}
+.row{display:flex;gap:8px;flex-wrap:wrap}
+
+/* Editor */
+.panel{background:var(--paper);border:1px solid var(--line);border-radius:18px;padding:18px;display:flex;flex-direction:column;gap:12px;box-shadow:var(--shadow);min-width:0}
+.ed-grid{display:grid;grid-template-columns:1.1fr .9fr;gap:16px;align-items:start}
+@media (max-width:860px){.ed-grid{grid-template-columns:1fr}}
+.ed-col{display:flex;flex-direction:column;gap:16px;min-width:0}
+label.lbl{font-weight:600;font-size:14px;display:flex;justify-content:space-between;align-items:center;gap:8px}
+textarea,input[type=text],input[type=number]{width:100%;border:1px solid var(--line);border-radius:12px;background:var(--cream);padding:10px 12px;font-size:16px;outline:none}
+textarea:focus,input:focus{border-color:var(--gold)}
+textarea.en-in{direction:ltr;text-align:left;font-family:var(--f-mono);font-size:14px;min-height:120px;resize:vertical;line-height:1.6}
+.bpm-row{display:flex;align-items:center;gap:12px}
+.bpm-row input[type=range]{flex:1;accent-color:var(--gold-deep);direction:ltr}
+.bpm-row input[type=number]{width:86px;text-align:center;font-family:var(--f-mono);direction:ltr}
+.ichip{display:inline-flex;align-items:center;gap:4px;border:1px solid var(--gold);background:var(--gold-wash);color:#5E4A28;border-radius:999px;padding:3px 6px 3px 12px;font-size:13px;direction:ltr}
+.ichip button{border:0;background:rgba(255,255,255,.7);width:22px;height:22px;border-radius:50%;line-height:1;font-size:14px;padding:0}
+.ichip.off{background:transparent;border-style:dashed;color:var(--ink-soft);text-decoration:line-through}
+.ichip.off button{text-decoration:none}
+.ichip.new{background:var(--ink);border-color:var(--ink);color:var(--paper)}
+.ichip.new button{background:rgba(255,255,255,.2);color:var(--paper)}
+.add-row{display:flex;gap:8px}
+.add-row input{direction:ltr;text-align:left}
+.opts{display:flex;flex-wrap:wrap;gap:8px}
+.opt{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);border-radius:999px;padding:6px 12px;font-size:13px;direction:ltr;background:var(--paper);cursor:pointer;user-select:none}
+.opt input{accent-color:var(--gold-deep);width:16px;height:16px;margin:0}
+.opt:has(input:checked){border-color:var(--gold);background:var(--gold-wash)}
+.hint{font-size:12.5px;color:var(--ink-soft);margin:0}
+.result{position:sticky;top:calc(env(safe-area-inset-top,0px) + 84px)}
+.result .en{font-size:14px;background:var(--cream);border:1px solid var(--line);min-height:100px}
+.badge{font-size:11.5px;border-radius:999px;padding:1px 10px;background:var(--gold-wash);color:var(--gold-deep);font-weight:600}
+
+/* Tips */
+.tips{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px}
+.tip{background:var(--paper);border:1px solid var(--line);border-radius:16px;padding:16px;display:flex;flex-direction:column;gap:6px}
+.tip h3{color:var(--gold-deep)}
+.tip p{margin:0;font-size:14.5px}
+.tip code,.panel code{font-family:var(--f-mono);font-size:13px;background:var(--gold-wash);border-radius:6px;padding:0 6px;direction:ltr;unicode-bidi:isolate}
+.callout{border:1px solid var(--gold);background:var(--gold-wash);border-radius:16px;padding:16px}
+.callout p{margin:4px 0 0}
+ol.steps{margin:0;padding-inline-start:20px;display:flex;flex-direction:column;gap:6px}
+
+/* Toast */
+.toast{position:fixed;left:50%;bottom:calc(92px + env(safe-area-inset-bottom,0px));transform:translate(-50%,20px);opacity:0;background:var(--ink);color:var(--paper);padding:10px 18px;border-radius:999px;font-size:14px;font-weight:500;z-index:80;transition:opacity .2s,transform .2s;pointer-events:none;display:flex;gap:8px;align-items:center;white-space:nowrap}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+.toast svg{width:16px;height:16px;color:#9FD3A9}
+@media (min-width:761px){.toast{bottom:32px}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+/* ===== Home ===== */
+body[data-view="home"] .brand{visibility:hidden}
+.hero{position:relative;overflow:hidden;border-radius:28px;background:radial-gradient(120% 90% at 50% 0%,#FFFDF8 0%,#FBF7EF 55%,#F3EBDD 100%);
+  border:1px solid #EADFC9;box-shadow:0 2px 4px rgba(120,90,40,.05),0 24px 48px -28px rgba(120,90,40,.35);
+  padding:34px 22px 28px;display:flex;flex-direction:column;align-items:center;text-align:center;gap:6px}
+.hero::after{content:"";position:absolute;inset:8px;border:1px solid rgba(197,164,109,.35);border-radius:22px;pointer-events:none}
+.waves{position:absolute;left:0;width:100%;height:120px;pointer-events:none}
+.waves.t{top:0}
+.waves.b{bottom:0;transform:scaleY(-1)}
+.waves path{fill:none;stroke:var(--gold);vector-effect:non-scaling-stroke}
+.hero-art{position:relative;width:min(230px,62vw);aspect-ratio:240/190;max-width:100%;filter:drop-shadow(0 14px 18px rgba(142,110,58,.28))}
+.hero-art svg{width:100%;height:100%;display:block}
+.hero-title{font-family:"Playfair Display",var(--f-latin);font-weight:700;font-size:clamp(34px,7.6vw,58px);line-height:1.05;letter-spacing:.005em;margin:10px 0 0;color:var(--ink);direction:ltr;position:relative}
+.hero-title span{font-family:var(--f-latin);font-style:italic;font-weight:600;background:linear-gradient(180deg,#D9BC84 0%,#C5A46D 45%,#9A7840 100%);-webkit-background-clip:text;background-clip:text;color:transparent;padding-inline:.06em}
+.ornament{display:flex;align-items:center;gap:10px;color:var(--gold);margin:8px 0 2px;position:relative}
+.ornament i{display:block;width:56px;height:1px;background:linear-gradient(90deg,transparent,var(--gold))}
+.ornament i:last-child{transform:scaleX(-1)}
+.ornament svg{width:12px;height:12px}
+.hero-sub{font-family:var(--f-display);font-size:clamp(16px,3.6vw,20px);color:#5A4E3E;margin:0;position:relative}
+.hero-search{position:relative;width:min(620px,100%);margin-top:18px;display:flex;align-items:center;background:var(--paper);border:1px solid #E3D5BB;border-radius:999px;
+  box-shadow:0 10px 26px -14px rgba(142,110,58,.45);padding:6px;gap:6px}
+.hero-search .ico{position:static;transform:none;margin-inline:12px 2px;flex:none;width:18px;height:18px;color:var(--gold-deep)}
+.hero-search input{flex:1;min-width:0;border:0;background:transparent;font-size:16px;padding:10px 4px;outline:none}
+.hero-search button{border:0;background:linear-gradient(180deg,#D3B47E,#C5A46D 50%,#B08D55);color:#fff;font-weight:600;border-radius:999px;padding:10px 20px;box-shadow:inset 0 1px 0 rgba(255,255,255,.4)}
+.facts{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin-top:14px;position:relative}
+.facts span{font-size:12.5px;color:var(--gold-deep);background:rgba(255,255,255,.7);border:1px solid #E6D7BA;border-radius:999px;padding:3px 12px;font-variant-numeric:tabular-nums}
+.sec-head{display:flex;align-items:flex-end;justify-content:space-between;gap:12px}
+.sec-head h2{display:flex;align-items:center;gap:10px}
+.sec-head h2::before{content:"";width:8px;height:8px;background:var(--gold);transform:rotate(45deg);flex:none}
+.link{border:0;background:none;color:var(--gold-deep);font-weight:600;font-size:14px;padding:4px 0;white-space:nowrap}
+.hcats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}
+@media (max-width:860px){.hcats{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}}
+.hcat{position:relative;text-align:start;border:1px solid #EDE3D1;background:linear-gradient(180deg,#FFFEFB,#FFFBF4);border-radius:20px;padding:16px;display:flex;flex-direction:column;gap:10px;
+  box-shadow:0 1px 2px rgba(120,90,40,.05),0 14px 30px -20px rgba(120,90,40,.4);transition:transform .2s,box-shadow .2s,border-color .2s;min-width:0}
+.hcat:hover{transform:translateY(-2px);border-color:var(--gold);box-shadow:0 1px 2px rgba(120,90,40,.05),0 20px 36px -20px rgba(120,90,40,.5)}
+.hcat .ic{width:48px;height:48px;border-radius:50%;display:grid;place-items:center;color:var(--gold-deep);
+  background:radial-gradient(circle at 35% 30%,#FFFFFF,#F2E7D2);box-shadow:inset 0 0 0 1px rgba(197,164,109,.6),0 6px 12px -6px rgba(142,110,58,.5)}
+.hcat .ic svg{width:24px;height:24px}
+.hcat b{font-family:var(--f-display);font-weight:600;font-size:15.5px;line-height:1.45}
+.hcat .foot{display:flex;align-items:center;justify-content:space-between;margin-top:auto}
+.hcat small{font-size:12.5px;color:var(--gold-deep);font-weight:600;font-variant-numeric:tabular-nums}
+.hcat .arr{width:26px;height:26px;border-radius:50%;display:grid;place-items:center;background:var(--gold-wash);color:var(--gold-deep)}
+.hcat .arr svg{width:14px;height:14px}
+.hcat.all{background:linear-gradient(160deg,#2F2921,#463B2C);border-color:#463B2C;color:#FBF6EC}
+.hcat.all .ic{background:radial-gradient(circle at 35% 30%,#E6CC97,#B8935A);color:#2F2921;box-shadow:none}
+.hcat.all small{color:#E2C98F}
+.hcat.all .arr{background:rgba(255,255,255,.12);color:#E2C98F}
+.quick{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+@media (max-width:620px){.quick{grid-template-columns:1fr}}
+.qtile{display:flex;align-items:center;gap:14px;text-align:start;border:1px solid #EDE3D1;background:var(--paper);border-radius:18px;padding:14px 16px;box-shadow:var(--shadow)}
+.qtile .ic{width:42px;height:42px;border-radius:14px;display:grid;place-items:center;background:var(--gold-wash);color:var(--gold-deep);flex:none}
+.qtile .ic svg{width:22px;height:22px}
+.qtile div{flex:1;min-width:0}
+.qtile b{display:block;font-family:var(--f-display);font-weight:600;font-size:15.5px}
+.qtile small{color:var(--ink-soft);font-size:12.5px}
+.qtile .num{font-family:"Playfair Display",var(--f-latin);font-size:22px;color:var(--gold-deep);font-variant-numeric:tabular-nums}
+.view > div:first-child > h1:not(.hero-title)::after{content:"";display:block;width:72px;height:2px;margin-top:10px;background:linear-gradient(270deg,var(--gold),transparent)}
+.card{border-color:#EDE3D1;border-radius:20px;box-shadow:0 1px 2px rgba(120,90,40,.05),0 14px 30px -22px rgba(120,90,40,.45)}
+.btn.gold{background:linear-gradient(180deg,#D3B47E,#C5A46D 50%,#B08D55);box-shadow:inset 0 1px 0 rgba(255,255,255,.35),0 6px 14px -8px rgba(142,110,58,.7)}
+@media (max-width:520px){
+  .hero{padding:26px 16px 22px;border-radius:24px}
+  .hcat{padding:14px;gap:8px;border-radius:18px}
+  .hcat .ic{width:42px;height:42px}
+  .hcat b{font-size:14.5px}
+  .hero-search button{padding:10px 16px}
+}
+footer{max-width:1080px;margin:40px auto 0;font-size:12px;color:var(--ink-soft);border-top:1px solid var(--line);padding-top:14px}
+</style>
+</head>
+<body>
+<script>document.documentElement.setAttribute("dir","rtl");document.documentElement.setAttribute("lang","ar");</script>
+<header class="top" dir="rtl">
+  <div class="wrap">
+    <div class="brand"><b>Suno <i>Prompt</i> Studio</b><small>أوامر Suno الجاهزة للتعليق الصوتي</small></div>
+    <nav class="tabs" id="tabs" dir="rtl" aria-label="التنقل">
+      <button class="tab" data-go="home"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M3.5 11L12 4l8.5 7" stroke-linejoin="round"/><path d="M6 9.5V20h12V9.5"/></svg>الرئيسية</button>
+      <button class="tab" data-go="library"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>المكتبة</button>
+      <button class="tab" data-go="favorites"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M12 3.5l2.6 5.3 5.8.8-4.2 4.1 1 5.8L12 16.8l-5.2 2.7 1-5.8L3.6 9.6l5.8-.8z" stroke-linejoin="round"/></svg>المفضلة<span class="count" id="favCount"></span></button>
+      <button class="tab" data-go="mine"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M4 20h4L19 9l-4-4L4 16z" stroke-linejoin="round"/><path d="M13.5 6.5l4 4"/></svg>برومبتاتي<span class="count" id="mineCount"></span></button>
+      <button class="tab" data-go="tips"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-3.5 10.9c.6.5 1 1.2 1 2.1h5c0-.9.4-1.6 1-2.1A6 6 0 0 0 12 3z" stroke-linejoin="round"/></svg>النصائح</button>
+    </nav>
+    <a class="suno-link" href="https://suno.com" target="_blank" rel="noopener">فتح Suno<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 5h5v5M19 5l-8 8M10 5H5v14h14v-5"/></svg></a>
+  </div>
+</header>
+
+<main class="wrap" id="app"></main>
+
+<footer>المصدر: ملف «أوامر Suno الجاهزة للتعليق الصوتي» · 35 برومبت أصلي في 7 أقسام. بياناتك (المفضلة وبرومبتاتي) محفوظة في هذا المتصفح فقط.</footer>
+
+<div class="toast" id="toast" role="status" aria-live="polite"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg><span></span></div>
+<div id="layer"></div>
+
+<script>
+(function(){
+"use strict";
+
+/* ===== Data: 35 original prompts from the PDF, text unchanged ===== */
+var CATS=[
+ {id:"ads",name:"الإعلانات التجارية",desc:"الإعلانات تحتاج موسيقى تدفع الإيقاع لكن تترك مساحة واضحة للصوت."},
+ {id:"doc",name:"الوثائقي والتعليق السردي",desc:"الوثائقي يحتاج موسيقى تدعم الصوت ولا تنافسه، لذلك تُفضَّل السرعات المنخفضة والطبقات الهادئة."},
+ {id:"story",name:"القصص العاطفية والكتب المسموعة",desc:"هنا الموسيقى تحمل الإحساس لكن بدون لحن بارز يشتت المستمع عن القصة."},
+ {id:"learn",name:"الدورات والتعلم الإلكتروني والشركات",desc:"في المحتوى التدريبي الخلفية تبقى محايدة ومريحة، لأن المتعلم يسمعها لفترات طويلة."},
+ {id:"pod",name:"البودكاست والريلز",desc:"المقدمات والخواتم قصيرة وتحتاج هوية واضحة، أما الخلفيات فتحتاج حضورًا خفيفًا."},
+ {id:"kids",name:"الأطفال والرسوم المتحركة",desc:"موسيقى الأطفال تحتاج ألحانًا بسيطة وآلات مرحة، مع إبقاء الإيقاع واضحًا لكن غير صاخب."},
+ {id:"gulf",name:"مناسبات خليجية وأجواء شرقية",desc:"إضافة آلات شرقية مثل العود والقانون والرق تعطي الهوية، لكن نتيجة Suno مع الآلات الشرقية تتفاوت، فجرّب أكثر من توليد."}
+];
+var P=[
+ ["ads","إعلان حماسي","منتج، عرض، افتتاح","upbeat energetic pop, punchy drums, bright synth plucks, 120 BPM, motivational, commercial feel, leaves room for voice-over",["punchy drums","bright synth plucks"]],
+ ["ads","إعلان فخم","عطور، ساعات، مجوهرات","luxury cinematic, slow elegant strings, soft deep bass, subtle piano, 80 BPM, sophisticated and premium, spacious mix for voice-over",["slow elegant strings","soft deep bass","subtle piano"]],
+ ["ads","إعلان عقاري","","warm uplifting corporate, light acoustic guitar, soft piano, gentle percussion, 100 BPM, optimistic and trustworthy, clean background for narration",["light acoustic guitar","soft piano","gentle percussion"]],
+ ["ads","إعلان سيارات","","modern cinematic electronic, driving bass, tense build-up, powerful drums, 110 BPM, bold and fast, strong intro hit",["driving bass","powerful drums"]],
+ ["ads","إعلان مطعم أو قهوة","","cozy acoustic lo-fi, warm guitar, soft brushed drums, light jazzy keys, 90 BPM, friendly and appetizing, relaxed background",["warm guitar","soft brushed drums","light jazzy keys"]],
+ ["ads","إعلان تقني أو تطبيق","","clean modern tech, minimal electronic beat, airy synth pads, soft arpeggios, 105 BPM, innovative and fresh, light background for voice",["minimal electronic beat","airy synth pads","soft arpeggios"]],
+ ["doc","وثائقي طبيعة وحياة برية","","epic nature documentary, sweeping orchestral strings, soft French horn, light percussion, 70 BPM, majestic and calm, wide spacious mix",["sweeping orchestral strings","soft French horn","light percussion"]],
+ ["doc","وثائقي تاريخي","","historical documentary, cinematic strings, oud and frame drum, solemn and reflective, 65 BPM, slow build, space for narration",["cinematic strings","oud and frame drum"]],
+ ["doc","وثائقي تحقيقي","غموض وتشويق","dark ambient suspense, low drones, subtle pulsing bass, sparse piano notes, 60 BPM, mysterious and tense, minimal and unobtrusive",["low drones","subtle pulsing bass","sparse piano notes"]],
+ ["doc","وثائقي علمي وتقني","","thoughtful electronic documentary, soft pulsing synths, light glitchy textures, 85 BPM, curious and modern, calm bed for narration",["soft pulsing synths","light glitchy textures"]],
+ ["doc","تعليق إخباري أو تقرير","","serious news bed, steady low strings, restrained percussion, 95 BPM, authoritative and neutral, no melody lead",["steady low strings","restrained percussion"]],
+ ["story","قصة عاطفية حزينة","","soft cinematic piano, 70 BPM, sad but hopeful, subtle ambient pad, intimate and emotional, background for voice-over",["soft cinematic piano","subtle ambient pad"]],
+ ["story","قصة رومانسية","","tender romantic, gentle solo piano, warm cello, soft strings, 72 BPM, dreamy and heartfelt, slow and spacious",["gentle solo piano","warm cello","soft strings"]],
+ ["story","قصة تحفيزية وسيرة نجاح","","inspirational cinematic, building piano and strings, light drums entering slowly, 90 BPM, hopeful and triumphant, steady build",["building piano and strings","light drums entering slowly"]],
+ ["story","كتاب مسموع هادئ","خلفية طويلة","calm ambient, soft pads, faint piano, no percussion, 60 BPM, peaceful and focused, very subtle long background",["soft pads","faint piano"]],
+ ["story","قصة غموض أو رعب خفيف","","dark atmospheric, low cello, eerie pads, sparse piano, distant textures, 55 BPM, suspenseful and quiet, no sudden loud hits",["low cello","eerie pads","sparse piano","distant textures"]],
+ ["learn","دورة تعليمية","مقدمة الوحدات","light corporate, soft acoustic guitar, gentle marimba, subtle claps, 100 BPM, positive and clear, friendly intro",["soft acoustic guitar","gentle marimba","subtle claps"]],
+ ["learn","شرح تعليمي","خلفية طويلة تحت الصوت","minimal ambient corporate, soft pads, light piano, no drums, 80 BPM, calm and neutral, very low presence, loopable feel",["soft pads","light piano"]],
+ ["learn","فيديو تعريفي بالشركة","","uplifting corporate inspirational, piano, light strings, steady soft drums, 105 BPM, confident and professional, gradual build",["piano","light strings","steady soft drums"]],
+ ["learn","وثائق وسياسات وامتثال","مثل ISO وأمن المعلومات","serious neutral corporate, soft synth pads, minimal pulse, light piano, 75 BPM, trustworthy and formal, unobtrusive background",["soft synth pads","minimal pulse","light piano"]],
+ ["learn","فيديو توعوي","سلامة، صحة، سلوك","warm hopeful ambient, gentle piano and acoustic guitar, soft strings, 85 BPM, caring and clear, light background for narration",["gentle piano and acoustic guitar","soft strings"]],
+ ["pod","مقدمة بودكاست","10 إلى 15 ثانية","warm morning vibes, bright acoustic guitar, soft claps, light piano, 100 BPM, friendly and welcoming, short catchy intro",["bright acoustic guitar","soft claps","light piano"]],
+ ["pod","خاتمة بودكاست","","soft warm outro, mellow guitar and piano, gentle fade, 85 BPM, grateful and relaxed, resolves gently",["mellow guitar and piano"]],
+ ["pod","خلفية حوار هادئة","","subtle lo-fi chill, soft Rhodes keys, muted drums, vinyl texture, 80 BPM, relaxed and low in the mix",["soft Rhodes keys","muted drums","vinyl texture"]],
+ ["pod","ريلز سريع وحماسي","","trendy upbeat electronic pop, catchy hook, punchy kick, snappy claps, 125 BPM, fun and energetic, instant start",["punchy kick","snappy claps"]],
+ ["pod","ريلز تعليمي هادئ","","light modern chill, soft synth plucks, gentle beat, airy pads, 95 BPM, smart and friendly, supportive background",["soft synth plucks","gentle beat","airy pads"]],
+ ["kids","قصة أطفال مرحة","","playful children's music, xylophone, ukulele, light pizzicato strings, bouncy 110 BPM, cheerful and whimsical, simple melody",["xylophone","ukulele","light pizzicato strings"]],
+ ["kids","قصة أطفال قبل النوم","","gentle lullaby, soft music box, warm harp, soft pads, 60 BPM, dreamy and soothing, very calm",["soft music box","warm harp","soft pads"]],
+ ["kids","رسوم متحركة ومغامرة","","adventurous animated score, bright brass, playful woodwinds, lively drums, 120 BPM, exciting and fun, cartoon feel",["bright brass","playful woodwinds","lively drums"]],
+ ["kids","محتوى تعليمي للأطفال","حروف وأرقام","fun educational kids, glockenspiel, clapping rhythm, bright synth, 105 BPM, happy and clear, repetitive simple hook",["glockenspiel","clapping rhythm","bright synth"]],
+ ["gulf","رمضان","أجواء روحانية دافئة","warm Arabic ambient, soft oud, gentle qanun, light frame drum, 75 BPM, spiritual and serene, calm background for narration",["soft oud","gentle qanun","light frame drum"]],
+ ["gulf","إعلان رمضاني","دفء وتجمع عائلي","heartwarming Arabic cinematic, oud and strings, soft percussion, 90 BPM, nostalgic and family-oriented, gradual build",["oud and strings","soft percussion"]],
+ ["gulf","اليوم الوطني","فخر وحماس","proud patriotic cinematic, powerful orchestra, bold drums, brass, 100 BPM, celebratory and majestic, strong build",["powerful orchestra","bold drums","brass"]],
+ ["gulf","تراث وأجواء خليجية","","Gulf heritage instrumental, oud, rababa, hand drums, 85 BPM, nostalgic and earthy, steady groove, room for voice",["oud","rababa","hand drums"]],
+ ["gulf","أجواء عربية سينمائية","","epic Arabic cinematic, sweeping strings, ney flute, deep frame drums, 80 BPM, emotional and grand, dramatic but spacious",["sweeping strings","ney flute","deep frame drums"]]
+].map(function(r,k){
+  var m=r[3].match(/(\d+)\s*BPM/i);
+  return {id:"p"+(k+1),cat:r[0],title:r[1],note:r[2],text:r[3],inst:r[4],bpm:m?parseInt(m[1],10):null};
+});
+var byId={};P.forEach(function(p){byId[p.id]=p});
+var catById={};CATS.forEach(function(c){catById[c.id]=c});
+var OPTIONS=["Instrumental only","No vocals","minimal","sparse","no sudden loud hits","strong intro hit"];
+var MAXCH=200;
+
+/* ===== Storage (safe) ===== */
+function load(k,def){try{var v=localStorage.getItem(k);return v?JSON.parse(v):def}catch(e){return def}}
+function save(k,v){try{localStorage.setItem(k,JSON.stringify(v));return true}catch(e){return false}}
+var favs=load("sps.favs",[]);
+var mine=load("sps.mine",[]);
+function persistFavs(){save("sps.favs",favs);updateCounts()}
+function persistMine(){save("sps.mine",mine);updateCounts()}
+
+/* ===== Helpers ===== */
+function esc(s){return String(s).replace(/[&<>"']/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]})}
+function normAr(s){return String(s||"").toLowerCase().replace(/[ً-ٰٟـ]/g,"").replace(/[أإآٱ]/g,"ا").replace(/ة/g,"ه").replace(/ى/g,"ي").replace(/ؤ/g,"و").replace(/ئ/g,"ي")}
+function $(s,r){return (r||document).querySelector(s)}
+var app=$("#app"),layer=$("#layer");
+var ICON={
+ copy:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V5a1 1 0 0 0-1-1H5a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h3"/></svg>',
+ star:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M12 3.5l2.6 5.3 5.8.8-4.2 4.1 1 5.8L12 16.8l-5.2 2.7 1-5.8L3.6 9.6l5.8-.8z" stroke-linejoin="round" fill="none"/></svg>',
+ edit:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 20h4L19 9l-4-4L4 16z" stroke-linejoin="round"/></svg>',
+ search:'<svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>',
+ reset:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 4v6h6"/><path d="M5.5 15a7 7 0 1 0 1.6-7.3L4 10"/></svg>',
+ save:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M5 4h11l3 3v13H5z"/><path d="M8 4v5h7V4M8 20v-6h8v6"/></svg>'
+};
+
+/* ===== Toast ===== */
+var toastT;
+function toast(msg){var t=$("#toast");t.querySelector("span").textContent=msg;t.classList.add("show");clearTimeout(toastT);toastT=setTimeout(function(){t.classList.remove("show")},2000)}
+
+/* ===== Copy (iPhone / Safari / desktop) ===== */
+function legacyCopy(text){
+  var ta=document.createElement("textarea");
+  ta.value=text;ta.setAttribute("readonly","");
+  ta.style.cssText="position:fixed;top:0;left:0;width:1px;height:1px;opacity:0;font-size:16px;border:0;padding:0";
+  document.body.appendChild(ta);
+  var ok=false;
+  try{
+    ta.contentEditable="true";ta.readOnly=false;
+    var range=document.createRange();range.selectNodeContents(ta);
+    var sel=window.getSelection();sel.removeAllRanges();sel.addRange(range);
+    ta.setSelectionRange(0,text.length);
+    ok=document.execCommand("copy");
+    sel.removeAllRanges();
+  }catch(e){ok=false}
+  document.body.removeChild(ta);
+  return ok;
+}
+function copyText(text){
+  var done=function(){toast("تم النسخ بنجاح")};
+  var fail=function(){ if(legacyCopy(text)) done(); else manualCopy(text); };
+  try{
+    if(navigator.clipboard&&navigator.clipboard.writeText){
+      navigator.clipboard.writeText(text).then(done,fail);
+      return;
+    }
+  }catch(e){}
+  fail();
+}
+function manualCopy(text){
+  openSheet('<div class="sheet-head"><div><h2>انسخ النص يدويًا</h2><p class="hint">المتصفح منع النسخ التلقائي هنا. النص محدد، اضغط عليه مطولًا واختر «نسخ».</p></div><button class="x" data-act="close" aria-label="إغلاق">×</button></div><textarea class="en-in" id="manualTa" readonly>'+esc(text)+'</textarea>');
+  var ta=$("#manualTa");setTimeout(function(){ta.focus();ta.setSelectionRange(0,text.length)},50);
+}
+
+/* ===== Prompt builder ===== */
+function segs(t){return String(t).split(",").map(function(s){return s.trim()}).filter(Boolean)}
+function lc(s){return s.trim().toLowerCase()}
+function build(st){
+  var s=segs(st.base),has=false,b=parseInt(st.bpm,10);
+  s=s.map(function(x){ if(/\d+\s*BPM/i.test(x)){has=true; return b?x.replace(/\d+\s*BPM/i,b+" BPM"):x.replace(/\s*\d+\s*BPM/i,"").trim();} return x;}).filter(Boolean);
+  if(!has&&b) s.push(b+" BPM");
+  var rm=st.removed.map(lc);
+  s=s.filter(function(x){return rm.indexOf(lc(x))<0});
+  if(st.added.length){
+    var ins=st.inst.map(lc),idx=-1;
+    s.forEach(function(x,k){if(ins.indexOf(lc(x))>=0)idx=k});
+    if(idx<0){var bi=-1;s.forEach(function(x,k){if(/BPM/i.test(x)&&bi<0)bi=k});idx=bi>0?bi-1:0}
+    var add=st.added.filter(function(a){return s.map(lc).indexOf(lc(a))<0});
+    s.splice.apply(s,[idx+1,0].concat(add));
+  }
+  st.options.forEach(function(o){if(s.map(lc).indexOf(lc(o))<0)s.push(o)});
+  return s.join(", ");
+}
+function presentInst(st){var b=segs(st.base).map(lc);return st.inst.filter(function(i){return b.indexOf(lc(i))>=0})}
+
+/* ===== State / routing ===== */
+var ui={q:"",cat:"all",editor:null};
+var VIEWS=["home","library","favorites","mine","tips","editor"];
+function current(){var h=location.hash.replace("#","");return VIEWS.indexOf(h)>=0?h:"home"}
+function go(v){if(location.hash==="#"+v)render();else location.hash=v}
+window.addEventListener("hashchange",render);
+
+function updateCounts(){
+  var f=$("#favCount"),m=$("#mineCount");
+  f.textContent=favs.length;m.textContent=mine.length;
+  favs.length?f.removeAttribute("data-zero"):f.setAttribute("data-zero","");
+  mine.length?m.removeAttribute("data-zero"):m.setAttribute("data-zero","");
+}
+
+/* ===== Renderers ===== */
+function cardHTML(p){
+  var fav=favs.indexOf(p.id)>=0;
+  return '<article class="card">'+
+   '<div class="card-head"><div class="titles" data-act="open" data-id="'+p.id+'"><small>'+esc(catById[p.cat].name)+'</small><h3><button>'+esc(p.title)+'</button></h3>'+(p.note?'<div class="note">'+esc(p.note)+'</div>':'')+'</div>'+
+   '<button class="star" data-act="fav" data-id="'+p.id+'" aria-pressed="'+fav+'" aria-label="'+(fav?"إزالة من المفضلة":"إضافة للمفضلة")+'">'+ICON.star+'</button></div>'+
+   '<p class="en" data-act="open" data-id="'+p.id+'">'+esc(p.text)+'</p>'+
+   '<div class="chips"><span class="chip bpm">'+p.bpm+' BPM</span>'+p.inst.map(function(i){return '<span class="chip">'+esc(i)+'</span>'}).join("")+'</div>'+
+   '<div class="card-actions"><button class="btn gold grow" data-act="copy" data-id="'+p.id+'">'+ICON.copy+'نسخ البرومبت</button><button class="btn" data-act="custom" data-id="'+p.id+'">'+ICON.edit+'تخصيص</button></div>'+
+  '</article>';
+}
+function filtered(){
+  var q=normAr(ui.q.trim());
+  return P.filter(function(p){
+    if(ui.cat!=="all"&&p.cat!==ui.cat)return false;
+    if(!q)return true;
+    var hay=normAr([p.title,p.note,p.text,catById[p.cat].name,p.inst.join(" "),p.bpm+" bpm"].join(" "));
+    return q.split(/\s+/).every(function(w){return hay.indexOf(w)>=0});
+  });
+}
+
+var CICON={
+ ads:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"><path d="M4 10v4h3l7 4V6L7 10z"/><path d="M17.5 9.5a3.5 3.5 0 0 1 0 5M7 14l1.5 5h2.5l-1-4.4"/></svg>',
+ doc:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"><rect x="3" y="7" width="13" height="10" rx="2"/><path d="M16 11l5-3v8l-5-3z"/><circle cx="7" cy="5" r="1.6"/><circle cx="12" cy="5" r="1.6"/></svg>',
+ story:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"><path d="M12 6.5C10 5 7 4.5 4 5v13c3-.5 6 0 8 1.5 2-1.5 5-2 8-1.5V5c-3-.5-6 0-8 1.5z"/><path d="M12 6.5v13"/></svg>',
+ learn:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"><path d="M2.5 9.5L12 5l9.5 4.5L12 14z"/><path d="M6.5 11.5V16c3 2.5 8 2.5 11 0v-4.5M21.5 9.5V15"/></svg>',
+ pod:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21M8.5 21h7"/></svg>',
+ kids:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"><path d="M12 3c3.3 0 5.5 2.5 5.5 5.6 0 3.6-3 6.4-5.5 6.4s-5.5-2.8-5.5-6.4C6.5 5.5 8.7 3 12 3z"/><path d="M11 15l-.8 1.6h3.6L13 15M12 16.6c0 2-1.5 2.4-1.5 4.4"/></svg>',
+ gulf:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"><path d="M14.5 3.5a8 8 0 1 0 6 11.8A7 7 0 0 1 14.5 3.5z"/><path d="M18 5.5l.6 1.4 1.4.6-1.4.6-.6 1.4-.6-1.4-1.4-.6 1.4-.6z"/></svg>',
+ all:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"><path d="M9 18V6l10-2v12"/><circle cx="6.5" cy="18" r="2.5"/><circle cx="16.5" cy="16" r="2.5"/></svg>'
+};
+var ARR='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M14 6l-6 6 6 6"/></svg>';
+function wavesSVG(cls){
+  var d=[],k;for(k=0;k<5;k++){var y=18+k*13,a=10+k*4;
+    d.push('<path d="M0 '+y+' C150 '+(y-a)+' 300 '+(y+a)+' 450 '+y+' S750 '+(y-a)+' 900 '+y+' S1200 '+(y+a)+' 1350 '+y+'" stroke-width="'+(k===2?1.6:1)+'" opacity="'+(0.65-k*0.1).toFixed(2)+'"/>')}
+  return '<svg class="waves '+cls+'" viewBox="0 0 1200 120" preserveAspectRatio="none" aria-hidden="true">'+d.join("")+'</svg>';
+}
+var MIC='<svg viewBox="0 0 240 190" aria-hidden="true"><defs>'+
+ '<linearGradient id="gG" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#F0DDB2"/><stop offset=".45" stop-color="#C5A46D"/><stop offset="1" stop-color="#8A6A35"/></linearGradient>'+
+ '<linearGradient id="gV" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#9C7B43"/><stop offset=".35" stop-color="#EBD3A2"/><stop offset=".6" stop-color="#C5A46D"/><stop offset="1" stop-color="#8A6A35"/></linearGradient>'+
+ '<linearGradient id="gD" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#4A3E2E"/><stop offset="1" stop-color="#2A251E"/></linearGradient></defs>'+
+ /* headphones */
+ '<path d="M44 118 V104 A76 76 0 0 1 196 104 V118" fill="none" stroke="url(#gV)" stroke-width="9" stroke-linecap="round"/>'+
+ '<path d="M44 106 A76 76 0 0 1 196 106" fill="none" stroke="#FFF6E2" stroke-width="1.5" opacity=".6"/>'+
+ '<rect x="26" y="108" width="30" height="54" rx="14" fill="url(#gD)"/><rect x="40" y="114" width="16" height="42" rx="8" fill="url(#gV)"/>'+
+ '<rect x="184" y="108" width="30" height="54" rx="14" fill="url(#gD)"/><rect x="184" y="114" width="16" height="42" rx="8" fill="url(#gV)"/>'+
+ /* mic */
+ '<path d="M90 96 v10 a30 30 0 0 0 60 0 v-10" fill="none" stroke="url(#gV)" stroke-width="6" stroke-linecap="round"/>'+
+ '<rect x="98" y="22" width="44" height="92" rx="22" fill="url(#gV)"/>'+
+ '<g stroke="#7E612F" stroke-width="1.3" opacity=".55">'+
+  '<path d="M102 38h36M100 48h40M100 58h40M100 68h40M102 78h36"/><path d="M110 26v54M120 23v58M130 26v54"/></g>'+
+ '<rect x="96" y="84" width="48" height="10" rx="3" fill="url(#gG)" stroke="#8A6A35" stroke-width=".8"/>'+
+ '<rect x="104" y="28" width="7" height="56" rx="3.5" fill="#FFF7E6" opacity=".45"/>'+
+ '<rect x="116" y="136" width="8" height="26" fill="url(#gV)"/>'+
+ '<path d="M92 170 q28 -12 56 0 v4 h-56z" fill="url(#gV)"/><rect x="88" y="172" width="64" height="7" rx="3.5" fill="url(#gG)"/>'+
+'</svg>';
+function renderHome(){
+  var counts={};CATS.forEach(function(c){counts[c.id]=0});P.forEach(function(p){counts[p.cat]++});
+  var favItems=favs.map(function(id){return byId[id]}).filter(Boolean);
+  app.innerHTML='<section class="view">'+
+   '<div class="hero">'+wavesSVG("t")+wavesSVG("b")+
+    '<div class="hero-art">'+MIC+'</div>'+
+    '<h1 class="hero-title">Suno <span>Prompt</span> Studio</h1>'+
+    '<div class="ornament"><i></i><svg viewBox="0 0 12 12"><path d="M6 0l6 6-6 6-6-6z" fill="currentColor"/></svg><i></i></div>'+
+    '<p class="hero-sub">مكتبتك الذكية لصناعة الموسيقى والتعليق الصوتي</p>'+
+    '<form class="hero-search" id="homeSearch" role="search">'+ICON.search+'<input id="hq" type="search" placeholder="ابحث عن برومبت… بالعربي أو English" autocomplete="off" enterkeyhint="search" aria-label="بحث"><button type="submit">بحث</button></form>'+
+    '<div class="facts"><span>35 برومبت</span><span>7 أقسام</span><span>جاهزة للنسخ إلى Suno</span></div>'+
+   '</div>'+
+   '<div class="sec-head"><h2>الأقسام</h2><button class="link" data-go="library">عرض المكتبة</button></div>'+
+   '<div class="hcats">'+CATS.map(function(c){return '<button class="hcat" data-act="gocat" data-cat="'+c.id+'"><span class="ic">'+CICON[c.id]+'</span><b>'+esc(c.name)+'</b><span class="foot"><small>'+counts[c.id]+' برومبتات</small><span class="arr">'+ARR+'</span></span></button>'}).join("")+
+    '<button class="hcat all" data-act="gocat" data-cat="all"><span class="ic">'+CICON.all+'</span><b>كل البرومبتات</b><span class="foot"><small>35 برومبت</small><span class="arr">'+ARR+'</span></span></button></div>'+
+   '<div class="sec-head"><h2>البرومبتات</h2></div>'+
+   '<div class="quick">'+
+    '<button class="qtile" data-go="library"><span class="ic">'+CICON.all+'</span><div><b>المكتبة الكاملة</b><small>تصفّح وابحث وانسخ</small></div><span class="num">35</span></button>'+
+    '<button class="qtile" data-go="favorites"><span class="ic">'+ICON.star+'</span><div><b>المفضلة</b><small>البرومبتات اللي اخترتها</small></div><span class="num">'+favs.length+'</span></button>'+
+    '<button class="qtile" data-go="mine"><span class="ic">'+ICON.edit+'</span><div><b>برومبتاتي</b><small>نسخك المعدّلة والمحفوظة</small></div><span class="num">'+mine.length+'</span></button>'+
+   '</div>'+
+   '<div class="sec-head"><h2>المفضلة</h2>'+(favItems.length?'<button class="link" data-go="favorites">عرض الكل</button>':'')+'</div>'+
+   (favItems.length?'<div class="grid">'+favItems.slice(0,3).map(cardHTML).join("")+'</div>':'<div class="empty"><h3>ما أضفت شي للمفضلة</h3>اضغط النجمة بجانب أي برومبت في المكتبة ويظهر هنا.</div>')+
+  '</section>';
+  $("#homeSearch").addEventListener("submit",function(e){e.preventDefault();ui.q=$("#hq").value.trim();ui.cat="all";go("library");window.scrollTo(0,0)});
+}
+function renderLibrary(){
+  app.innerHTML=
+  '<section class="view">'+
+   '<div><div class="eyebrow">مكتبة البرومبتات · 35 أمرًا في 7 أقسام</div><h1>موسيقى خلفية تترك مساحة لصوتك</h1>'+
+   '<p class="lead">انسخ الوصف الإنجليزي وضعه في خانة الـ Style في Suno، ثم فعّل Instrumental حتى تطلع الموسيقى بدون غناء.</p>'+
+   '<div class="formula"><span>النوع الموسيقي</span><em>+</em><span>الآلات</span><em>+</em><span>السرعة BPM</span><em>+</em><span>الإحساس</span><em>+</em><span>دور الموسيقى كخلفية</span></div></div>'+
+   '<div class="search">'+ICON.search+'<input id="q" type="search" placeholder="ابحث بالعربي أو English… مثل: وثائقي، oud، piano" value="'+esc(ui.q)+'" autocomplete="off" enterkeyhint="search"><button class="clear" data-act="clearq" aria-label="مسح البحث"'+(ui.q?'':' hidden')+'>×</button></div>'+
+   '<div class="cats" id="cats"></div>'+
+   '<div id="catNote"></div>'+
+   '<div class="meta-line"><span class="n" id="count"></span></div>'+
+   '<div class="grid" id="list"></div>'+
+  '</section>';
+  $("#q").addEventListener("input",function(e){ui.q=e.target.value;$(".clear").hidden=!ui.q;renderList()});
+  renderList();
+}
+function renderList(){
+  var items=filtered();
+  var counts={};CATS.forEach(function(c){counts[c.id]=0});
+  P.forEach(function(p){counts[p.cat]++});
+  $("#cats").innerHTML='<button class="cat" data-act="cat" data-cat="all" aria-pressed="'+(ui.cat==="all")+'"><b>كل الأقسام</b><small>35 برومبت</small></button>'+
+    CATS.map(function(c){return '<button class="cat" data-act="cat" data-cat="'+c.id+'" aria-pressed="'+(ui.cat===c.id)+'"><b>'+esc(c.name)+'</b><small>'+counts[c.id]+' برومبتات</small></button>'}).join("");
+  $("#catNote").innerHTML=ui.cat!=="all"?'<p class="cat-note">'+esc(catById[ui.cat].desc)+'</p>':'';
+  $("#count").textContent=items.length?("يظهر "+items.length+" من 35"):"";
+  $("#list").innerHTML=items.length?items.map(cardHTML).join(""):'<div class="empty" style="grid-column:1/-1"><h3>ما في نتائج</h3>جرّب كلمة ثانية بالعربي أو الإنجليزي، أو اختر «كل الأقسام».</div>';
+}
+function renderFavs(){
+  var items=favs.map(function(id){return byId[id]}).filter(Boolean);
+  app.innerHTML='<section class="view"><div><div class="eyebrow">المفضلة</div><h1>برومبتاتك المختارة</h1><p class="lead">اضغط النجمة على أي برومبت في المكتبة وبيوصل هنا.</p></div>'+
+   (items.length?'<div class="grid">'+items.map(cardHTML).join("")+'</div>':'<div class="empty"><h3>المفضلة فاضية</h3>ارجع للمكتبة واضغط النجمة بجانب أي برومبت.<div style="margin-top:14px"><button class="btn gold" data-go="library">فتح المكتبة</button></div></div>')+'</section>';
+}
+function renderMine(){
+  app.innerHTML='<section class="view"><div><div class="eyebrow">برومبتاتي</div><h1>نسخك المعدّلة</h1><p class="lead">كل برومبت تخصصه وتحفظه من المحرر يظهر هنا. تقدر تنسخه أو تعدله أو تحذفه.</p></div>'+
+   (mine.length?'<div class="grid">'+mine.slice().sort(function(a,b){return b.updated-a.updated}).map(function(m){
+     var src=byId[m.sourceId];
+     var len=m.output.length;
+     return '<article class="card"><div class="card-head"><div class="titles"><small>مبني على: '+esc(src?src.title:"—")+'</small><h3>'+esc(m.name)+'</h3><div class="note">آخر تعديل: '+new Date(m.updated).toLocaleDateString("ar-KW",{day:"numeric",month:"long"})+'</div></div><span class="chars'+(len>MAXCH?' over':'')+'">'+len+' حرف</span></div>'+
+     '<p class="en">'+esc(m.output)+'</p>'+
+     '<div class="card-actions"><button class="btn gold grow" data-act="copymine" data-id="'+m.id+'">'+ICON.copy+'نسخ البرومبت</button><button class="btn" data-act="editmine" data-id="'+m.id+'">'+ICON.edit+'تعديل</button><button class="btn danger" data-act="delmine" data-id="'+m.id+'">حذف</button></div></article>';
+   }).join("")+'</div>':'<div class="empty"><h3>ما حفظت شي للحين</h3>افتح أي برومبت، اضغط «تخصيص»، عدّل عليه ثم «حفظ في برومبتاتي».<div style="margin-top:14px"><button class="btn gold" data-go="library">اختيار برومبت</button></div></div>')+'</section>';
+}
+function renderTips(){
+  app.innerHTML='<section class="view">'+
+  '<div><div class="eyebrow">نصائح من الملف</div><h1>نصائح الدمج وتعديل الأوامر</h1></div>'+
+  '<div class="panel"><h2>طريقة الاستخدام</h2><ol class="steps">'+
+   '<li>انسخ الوصف الإنجليزي وضعه في خانة الـ <code>Style</code> في Suno، ثم فعّل خيار <code>Instrumental</code> حتى تطلع الموسيقى بدون غناء.</li>'+
+   '<li>اكتب الوصف بدون أقواس مربعة، لأن الأقواس تُستخدم عادة في خانة الكلمات للتحكم بالمقاطع.</li>'+
+   '<li>التسميات قد تختلف قليلًا في الواجهة الحالية، فتأكد منها قبل التصوير أو التسليم.</li></ol>'+
+   '<p class="hint">كل أمر مبني على نفس القاعدة: النوع الموسيقي + الآلات + السرعة (BPM) + الإحساس + دور الموسيقى كخلفية للصوت. جملة مثل <code>leaves room for voice-over</code> تساعد الموسيقى على ترك مساحة للتعليق، لكن النتيجة تختلف من توليد لآخر، فجرّب أكثر من نسخة. الأوصاف قصيرة عمدًا (أقل من 200 حرف تقريبًا) لتناسب حدود الخانة في أي خطة.</p></div>'+
+  '<div class="tips">'+
+   tip("السرعة",'أنزل الـ BPM وأضف <code>minimal</code> أو <code>sparse</code> إذا طلعت الموسيقى مزدحمة فوق الصوت.')+
+   tip("الحدة",'أضف <code>strong intro hit</code> للإعلانات، و<code>no sudden loud hits</code> للمحتوى الهادئ.')+
+   tip("أكثر من نسخة","ولّد 3 إلى 4 نسخ لنفس الأمر، فالفروقات بينها كبيرة، واختر الأنسب لنبرة صوتك.")+
+   tip("المستوى","اخفض الموسيقى تحت الصوت في المونتاج (عادةً بين 15 و20 ديسيبل أقل من التعليق كنقطة بداية)، ثم اضبطها بالأذن.")+
+   tip("الفلترة",'مرّر الموسيقى على <code>EQ</code> بسيط وخفّض الترددات المتوسطة (1 إلى 4 كيلوهرتز تقريبًا) لتترك مساحة لوضوح الصوت.')+
+   tip("الطول","إذا احتجت خلفية طويلة، ولّد مقطعًا ثم مدّده أو كرّره في المونتاج بدل الاعتماد على توليد واحد.")+
+  '</div>'+
+  '<div class="callout"><h3>ملاحظة الترخيص</h3><p>الاستخدام التجاري وحقوق ما تولّده يعتمدان على خطتك في Suno وشروطها الحالية، وهي تتغير. راجعها قبل تسليم أي عمل لعميل، واحتفظ بما يثبت خطتك وقت التوليد.</p></div>'+
+  '<div><a class="suno-link" href="https://suno.com" target="_blank" rel="noopener">فتح موقع Suno الرسمي</a></div>'+
+  '</section>';
+}
+function tip(h,p){return '<div class="tip"><h3>'+h+'</h3><p>'+p+'</p></div>'}
+
+/* ===== Detail sheet ===== */
+function openSheet(html){
+  layer.innerHTML='<div class="overlay" data-act="backdrop"><div class="sheet" role="dialog" aria-modal="true">'+html+'</div></div>';
+  document.documentElement.style.overflow="hidden";
+}
+function closeSheet(){layer.innerHTML="";document.documentElement.style.overflow=""}
+function openDetail(id){
+  var p=byId[id],fav=favs.indexOf(id)>=0;
+  openSheet('<div class="sheet-head"><div><div class="eyebrow">'+esc(catById[p.cat].name)+'</div><h2>'+esc(p.title)+'</h2>'+(p.note?'<div class="note">'+esc(p.note)+'</div>':'')+'</div><button class="x" data-act="close" aria-label="إغلاق">×</button></div>'+
+   '<p class="en" style="font-size:14px">'+esc(p.text)+'</p>'+
+   '<dl class="kv"><dt>السرعة</dt><dd><span class="chip bpm">'+p.bpm+' BPM</span></dd>'+
+   '<dt>الآلات</dt><dd class="chips">'+p.inst.map(function(i){return '<span class="chip">'+esc(i)+'</span>'}).join("")+'</dd>'+
+   '<dt>الطول</dt><dd><span class="chars">'+p.text.length+' حرف من '+MAXCH+' تقريبًا</span></dd></dl>'+
+   '<p class="hint">'+esc(catById[p.cat].desc)+'</p>'+
+   '<div class="row"><button class="btn gold grow" data-act="copy" data-id="'+p.id+'">'+ICON.copy+'نسخ البرومبت</button><button class="btn" data-act="custom" data-id="'+p.id+'">'+ICON.edit+'تخصيص</button><button class="star" data-act="fav" data-id="'+p.id+'" aria-pressed="'+fav+'" aria-label="المفضلة">'+ICON.star+'</button></div>');
+}
+
+/* ===== Editor ===== */
+function freshState(p){return {sourceId:p.id,mineId:null,name:p.title+" · نسختي",base:p.text,bpm:p.bpm,inst:p.inst.slice(),removed:[],added:[],options:[]}}
+function startEditor(id){ui.editor=freshState(byId[id]);closeSheet();go("editor");window.scrollTo(0,0)}
+function editMine(mid){
+  var m=mine.filter(function(x){return x.id===mid})[0];if(!m)return;
+  var p=byId[m.sourceId];
+  ui.editor={sourceId:m.sourceId,mineId:m.id,name:m.name,base:m.base,bpm:m.bpm,inst:(p?p.inst:[]).slice(),removed:m.removed.slice(),added:m.added.slice(),options:m.options.slice()};
+  go("editor");window.scrollTo(0,0);
+}
+function renderEditor(){
+  var st=ui.editor;
+  if(!st){location.replace("#library");return}
+  var p=byId[st.sourceId];
+  app.innerHTML='<section class="view">'+
+  '<div><div class="eyebrow">محرر البرومبت'+(st.mineId?' · تعديل نسخة محفوظة':'')+'</div><h1>'+esc(p.title)+'</h1><p class="lead">أي تغيير هنا يحدّث البرومبت الناتج مباشرة. النص الأصلي محفوظ ما يضيع، وتقدر ترجعه بزر «استعادة النص الأصلي».</p></div>'+
+  '<div class="ed-grid"><div class="ed-col">'+
+   '<div class="panel"><label class="lbl" for="edBase">النص الإنجليزي <span class="badge" id="baseBadge"></span></label><textarea class="en-in" id="edBase" spellcheck="false" autocapitalize="off" autocorrect="off"></textarea><p class="hint">افصل بين العناصر بفاصلة (,) عشان تشتغل أدوات الآلات والسرعة صح.</p></div>'+
+   '<div class="panel"><label class="lbl" for="edBpmN">السرعة (BPM) <span class="hint">الأصلي: '+p.bpm+'</span></label><div class="bpm-row"><input type="range" id="edBpmR" min="40" max="180" step="1" aria-label="BPM"><input type="number" id="edBpmN" min="40" max="180" inputmode="numeric"></div></div>'+
+   '<div class="panel"><div class="lbl">الآلات الموسيقية</div><div class="chips" id="edInst"></div><p class="hint">اضغط × لحذف آلة، واضغطها مرة ثانية لإرجاعها.</p>'+
+    '<div class="add-row"><input type="text" id="edAdd" placeholder="مثال: soft oud" autocapitalize="off" autocorrect="off" enterkeyhint="done"><button class="btn dark" data-act="addinst">إضافة</button></div></div>'+
+   '<div class="panel"><div class="lbl">تعليمات إضافية</div><div class="opts" id="edOpts"></div><p class="hint">الأربع الأخيرة من نصائح الملف: minimal وsparse للتخفيف، والحدة حسب نوع المحتوى.</p></div>'+
+  '</div><div class="ed-col result">'+
+   '<div class="panel"><div class="lbl">البرومبت الناتج <span class="chars" id="edChars"></span></div><p class="en" id="edOut"></p>'+
+    '<div class="row"><button class="btn gold grow" data-act="copyout">'+ICON.copy+'نسخ البرومبت المعدل</button><button class="btn" data-act="copyorig">نسخ الأصلي</button></div></div>'+
+   '<div class="panel"><label class="lbl" for="edName">اسم النسخة</label><input type="text" id="edName">'+
+    '<div class="row"><button class="btn dark grow" data-act="savemine">'+ICON.save+(st.mineId?'حفظ التعديلات':'حفظ في برومبتاتي')+'</button><button class="btn" data-act="reset">'+ICON.reset+'استعادة النص الأصلي</button></div></div>'+
+  '</div></div></section>';
+  $("#edBase").value=st.base;$("#edName").value=st.name;
+  $("#edBpmR").value=st.bpm;$("#edBpmN").value=st.bpm;
+  $("#edBase").addEventListener("input",function(e){st.base=e.target.value;edUpdate()});
+  $("#edName").addEventListener("input",function(e){st.name=e.target.value});
+  $("#edBpmR").addEventListener("input",function(e){st.bpm=parseInt(e.target.value,10);$("#edBpmN").value=st.bpm;edUpdate()});
+  $("#edBpmN").addEventListener("input",function(e){var v=parseInt(e.target.value,10);if(v>=40&&v<=180){st.bpm=v;$("#edBpmR").value=v;edUpdate()}});
+  $("#edBpmN").addEventListener("change",function(e){var v=parseInt(e.target.value,10);if(!(v>=40))v=40;if(v>180)v=180;st.bpm=v;e.target.value=v;$("#edBpmR").value=v;edUpdate()});
+  $("#edAdd").addEventListener("keydown",function(e){if(e.key==="Enter"){e.preventDefault();addInst()}});
+  edUpdate();
+}
+function edUpdate(){
+  var st=ui.editor,p=byId[st.sourceId];
+  var pres=presentInst(st);
+  var instHTML=pres.map(function(i){var off=st.removed.map(lc).indexOf(lc(i))>=0;
+     return '<span class="ichip'+(off?' off':'')+'">'+esc(i)+'<button data-act="toginst" data-v="'+esc(i)+'" aria-label="'+(off?'إرجاع':'حذف')+' '+esc(i)+'">'+(off?'↺':'×')+'</button></span>'}).join("")+
+   st.added.map(function(i,k){return '<span class="ichip new">'+esc(i)+'<button data-act="rmadd" data-k="'+k+'" aria-label="حذف '+esc(i)+'">×</button></span>'}).join("")||'<span class="hint">ما في آلات في النص الحالي.</span>';
+  var ie=$("#edInst");if(ie._h!==instHTML){ie.innerHTML=instHTML;ie._h=instHTML}
+  var optsHTML=OPTIONS.map(function(o,k){return '<label class="opt"><input type="checkbox" id="opt'+k+'" data-opt="'+esc(o)+'"'+(st.options.indexOf(o)>=0?' checked':'')+'>'+esc(o)+'</label>'}).join("");
+  var oe=$("#edOpts");if(oe._h!==optsHTML){oe.innerHTML=optsHTML;oe._h=optsHTML}
+  var out=build(st);st.output=out;
+  $("#edOut").textContent=out;
+  var c=$("#edChars");c.textContent=out.length+" / "+MAXCH+" حرف";c.className="chars"+(out.length>MAXCH?" over":"");
+  var changed=out!==p.text;$("#baseBadge").textContent=st.base===p.text?"أصلي":"معدّل";
+  $("#baseBadge").hidden=false;
+  return changed;
+}
+function addInst(){
+  var st=ui.editor,inp=$("#edAdd"),v=inp.value.replace(/,/g," ").trim();
+  if(!v)return;
+  var all=segs(st.base).map(lc).concat(st.added.map(lc));
+  if(all.indexOf(lc(v))>=0){toast("الآلة موجودة أصلًا");return}
+  st.added.push(v);inp.value="";edUpdate();
+}
+
+/* ===== Events ===== */
+document.addEventListener("change",function(e){
+  var o=e.target.getAttribute&&e.target.getAttribute("data-opt");
+  if(o&&ui.editor){var st=ui.editor,i=st.options.indexOf(o);
+    if(e.target.checked&&i<0)st.options.push(o);if(!e.target.checked&&i>=0)st.options.splice(i,1);edUpdate()}
+});
+var armed=null,armT;
+document.addEventListener("click",function(e){
+  var g=e.target.closest("[data-go]");if(g){closeSheet();go(g.getAttribute("data-go"));window.scrollTo(0,0);return}
+  var a=e.target.closest("[data-act]");if(!a)return;
+  var act=a.getAttribute("data-act"),id=a.getAttribute("data-id");
+  if(act==="backdrop"){if(e.target===a){closeSheet();if(current()==="home")renderHome()}return}
+  switch(act){
+   case "copy": copyText(byId[id].text); break;
+   case "open": openDetail(id); break;
+   case "close": closeSheet();if(current()==="home")renderHome(); break;
+   case "fav":
+     var i=favs.indexOf(id);if(i>=0){favs.splice(i,1);toast("أُزيل من المفضلة")}else{favs.push(id);toast("أُضيف للمفضلة")}
+     persistFavs();
+     document.querySelectorAll('.star[data-id="'+id+'"]').forEach(function(s){s.setAttribute("aria-pressed",String(i<0))});
+     if(!layer.innerHTML){if(current()==="favorites")renderFavs();else if(current()==="home")renderHome();}
+     break;
+   case "custom": startEditor(id); break;
+   case "gocat": ui.cat=a.getAttribute("data-cat");ui.q="";go("library");window.scrollTo(0,0); break;
+   case "cat": ui.cat=a.getAttribute("data-cat");renderList(); break;
+   case "clearq": ui.q="";$("#q").value="";a.hidden=true;renderList();$("#q").focus(); break;
+   case "toginst":
+     var st=ui.editor,v=a.getAttribute("data-v"),k=st.removed.map(lc).indexOf(lc(v));
+     if(k>=0)st.removed.splice(k,1);else st.removed.push(v);edUpdate(); break;
+   case "rmadd": ui.editor.added.splice(parseInt(a.getAttribute("data-k"),10),1);edUpdate(); break;
+   case "addinst": addInst(); break;
+   case "copyout": copyText(ui.editor.output); break;
+   case "copyorig": copyText(byId[ui.editor.sourceId].text); break;
+   case "reset":
+     var s0=ui.editor,f=freshState(byId[s0.sourceId]);f.mineId=s0.mineId;f.name=s0.name;ui.editor=f;renderEditor();toast("رجع النص الأصلي");break;
+   case "savemine":
+     var s=ui.editor,name=(s.name||"").trim()||byId[s.sourceId].title,now=Date.now();
+     var rec={id:s.mineId||("m"+now),sourceId:s.sourceId,name:name,base:s.base,bpm:s.bpm,removed:s.removed.slice(),added:s.added.slice(),options:s.options.slice(),output:build(s),updated:now};
+     var ix=-1;mine.forEach(function(m,k){if(m.id===rec.id)ix=k});
+     if(ix>=0)mine[ix]=rec;else mine.push(rec);
+     s.mineId=rec.id;persistMine();
+     toast(ix>=0?"تم حفظ التعديلات":"تم الحفظ في برومبتاتي");renderEditor();break;
+   case "copymine": var m=mine.filter(function(x){return x.id===id})[0];if(m)copyText(m.output); break;
+   case "editmine": editMine(id); break;
+   case "delmine":
+     if(armed===id){mine=mine.filter(function(x){return x.id!==id});armed=null;persistMine();renderMine();toast("تم الحذف")}
+     else{armed=id;document.querySelectorAll('[data-act="delmine"]').forEach(function(b){b.classList.remove("armed");b.textContent="حذف"});
+       a.classList.add("armed");a.textContent="تأكيد الحذف";clearTimeout(armT);
+       armT=setTimeout(function(){armed=null;a.classList.remove("armed");a.textContent="حذف"},4000)}
+     break;
+  }
+});
+document.addEventListener("keydown",function(e){if(e.key==="Escape"&&layer.innerHTML)closeSheet()});
+
+function render(){
+  closeSheet();
+  var v=current();
+  document.querySelectorAll(".tab").forEach(function(t){t.getAttribute("data-go")===v||(v==="editor"&&t.getAttribute("data-go")==="mine"&&ui.editor&&ui.editor.mineId)?t.setAttribute("aria-current","page"):t.removeAttribute("aria-current")});
+  document.body.setAttribute("data-view",v);
+  ({home:renderHome,library:renderLibrary,favorites:renderFavs,mine:renderMine,tips:renderTips,editor:renderEditor})[v]();
+}
+updateCounts();render();
+window.__SPS={P:P,CATS:CATS,build:build};
+})();
+</script>
+</body>
+</html>
